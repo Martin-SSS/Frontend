@@ -4,11 +4,11 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import { useState } from "react";
+import { useState, useEffect } from "react";  // useEffect
 
-// Worker卡片组件
+// Worker 
 const WorkerCard = ({ workerName, metrics }) => {
-  const [isExpanded, setIsExpanded] = useState(false); // 控制展开/收起状态
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <Box
@@ -28,11 +28,7 @@ const WorkerCard = ({ workerName, metrics }) => {
         justifyContent="space-between"
         width="100%"
       >
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          color="#2b2b2b"
-        >
+        <Typography variant="h5" fontWeight="bold" color="#2b2b2b">
           <ComputerOutlinedIcon sx={{ mr: 1, fontSize: "32px" }} />
           {workerName}
         </Typography>
@@ -86,61 +82,86 @@ const WorkerCard = ({ workerName, metrics }) => {
   );
 };
 
-// Dashboard 页面
-const Dashboard = () => (
-  <Box display="flex" flexDirection="column" gap={3} p="20px">
-    <Typography
-      variant="h4"
-      fontWeight="bold"
-      textAlign="center"
-      mb={2}
-      color="#1f1f1f"
-    >
-      Monitor Dashboard
-    </Typography>
+// Dashboard 
+const Dashboard = () => {
+  // store workers 
+  const [workers, setWorkers] = useState([]);
 
-    <Box display="flex" justifyContent="space-between" gap="20px">
-      <Box flex={1} display="flex" flexDirection="column" gap={3}>
-        <WorkerCard
-          workerName="Worker 1"
-          metrics={[
-            { label: "CPU", value: "40%" },
-            { label: "Disk", value: "50GB" },
-            { label: "Net", value: "200mbps" },
-            { label: "Mem", value: "8GB" },
-          ]}
-        />
-        <WorkerCard
-          workerName="Worker 3"
-          metrics={[
-            { label: "CPU", value: "35%" },
-            { label: "Disk", value: "50GB" },
-            { label: "Net", value: "200mbps" },
-            { label: "Mem", value: "8GB" },
-          ]}
-        />
-      </Box>
+  // use useEffect get JSON data
+  useEffect(() => {
+    fetch("worker_parameters_config.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const workersData = data.workers_param_dict;
+        const workersList = [];
+        for (const key in workersData) {
+          if (Object.hasOwn(workersData, key)) {
+            const workerInfo = workersData[key];
+            // gain worker name
+            const name = workerInfo.name || key;
+            // gain data 
+            const dataObj = workerInfo.setup?.data;
+            const freq = dataObj?.FREQ ?? "N/A";
+            const bw = dataObj?.BW ?? "N/A";
+            const duration = dataObj?.data_DURATION ?? "N/A";
+            // set metrics 
+            const metrics = [
+              { label: "CPU  (FREQ)", value: freq },
+              { label: "BW", value: bw },
+              { label: "data_DURATION", value: duration },
+            ];
+            workersList.push({ name: name, metrics: metrics });
+          }
+        }
+        setWorkers(workersList);
+      })
+      .catch((error) => {
+        console.error("load worker data fail:", error);
+      });
+  }, []);
 
-      <Box flex={1} display="flex" flexDirection="column" gap={3}>
-        <WorkerCard
-          workerName="Worker 2"
-          metrics={[{ label: "CPU", value: "25%" },
-            { label: "Disk", value: "50GB" },
-            { label: "Net", value: "200mbps" },
-            { label: "Mem", value: "8GB" },
-          ]}
-        />
-        <WorkerCard
-          workerName="Worker 4"
-          metrics={[{ label: "CPU", value: "15%" },
-            { label: "Disk", value: "50GB" },
-            { label: "Net", value: "200mbps" },
-            { label: "Mem", value: "8GB" },
-          ]}
-        />
+  // workers 
+  const half = Math.ceil(workers.length / 2);
+  const leftWorkers = workers.slice(0, half);
+  const rightWorkers = workers.slice(half);
+
+  return (
+    <Box display="flex" flexDirection="column" gap={3} p="20px">
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        textAlign="center"
+        mb={2}
+        color="#1f1f1f"
+      >
+        Monitor Dashboard
+      </Typography>
+
+      <Box display="flex" justifyContent="space-between" gap="20px">
+        {/* left */}
+        <Box flex={1} display="flex" flexDirection="column" gap={3}>
+          {leftWorkers.map((worker) => (
+            <WorkerCard
+              key={worker.name}
+              workerName={worker.name}
+              metrics={worker.metrics}
+            />
+          ))}
+        </Box>
+
+        {/* right */}
+        <Box flex={1} display="flex" flexDirection="column" gap={3}>
+          {rightWorkers.map((worker) => (
+            <WorkerCard
+              key={worker.name}
+              workerName={worker.name}
+              metrics={worker.metrics}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 export default Dashboard;
