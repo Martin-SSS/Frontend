@@ -24,13 +24,22 @@ import WorkerTerminal from "./pages/WorkerTerminal";
 import WorkerPrediction from "./pages/WorkerPrediction";
 import WorkerTaskAllocation from "./pages/WorkerTaskAllocation";
 import WorkerUploadFile from "./pages/WorkerUploadFile";
-
+import { UpdateClientPlayground } from "./pages/UpdateClientPlayground";
+import { ObjectClientPlaygroundWrapper } from "./pages/ObjectClientPlayground";
 
 const AppRouter = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<App />}>
+          <Route
+            path="/update-client-playground"
+            element={<UpdateClientPlayground />}
+          />
+          <Route
+            path="/object-client-playground"
+            element={<ObjectClientPlaygroundWrapper />}
+          />
           <Route path="/" element={<Dashboard />} />
           <Route path="/team" element={<Team />} />
           <Route path="/contacts" element={<Contacts />} />
@@ -51,28 +60,40 @@ const AppRouter = () => {
           <Route path="/worker4" element={<Worker4Page />} />
 
           {/* Setting Page */}
-          <Route path="/settings" element={<SettingPage />} />          
+          <Route path="/settings" element={<SettingPage />} />
 
           {/* Worker Submenu Routes */}
-        <Route path="/worker1/terminal" element={<WorkerTerminal />} />
-        <Route path="/worker1/prediction" element={<WorkerPrediction />} />
-        <Route path="/worker1/task-allocation" element={<WorkerTaskAllocation />} />
-        <Route path="/worker1/upload-file" element={<WorkerUploadFile />} />
+          <Route path="/worker1/terminal" element={<WorkerTerminal />} />
+          <Route path="/worker1/prediction" element={<WorkerPrediction />} />
+          <Route
+            path="/worker1/task-allocation"
+            element={<WorkerTaskAllocation />}
+          />
+          <Route path="/worker1/upload-file" element={<WorkerUploadFile />} />
 
-        <Route path="/worker2/terminal" element={<WorkerTerminal />} />
-        <Route path="/worker2/prediction" element={<WorkerPrediction />} />
-        <Route path="/worker2/task-allocation" element={<WorkerTaskAllocation />} />
-        <Route path="/worker2/upload-file" element={<WorkerUploadFile />} />
+          <Route path="/worker2/terminal" element={<WorkerTerminal />} />
+          <Route path="/worker2/prediction" element={<WorkerPrediction />} />
+          <Route
+            path="/worker2/task-allocation"
+            element={<WorkerTaskAllocation />}
+          />
+          <Route path="/worker2/upload-file" element={<WorkerUploadFile />} />
 
-        <Route path="/worker3/terminal" element={<WorkerTerminal />} />
-        <Route path="/worker3/prediction" element={<WorkerPrediction />} />
-        <Route path="/worker3/task-allocation" element={<WorkerTaskAllocation />} />
-        <Route path="/worker3/upload-file" element={<WorkerUploadFile />} />
+          <Route path="/worker3/terminal" element={<WorkerTerminal />} />
+          <Route path="/worker3/prediction" element={<WorkerPrediction />} />
+          <Route
+            path="/worker3/task-allocation"
+            element={<WorkerTaskAllocation />}
+          />
+          <Route path="/worker3/upload-file" element={<WorkerUploadFile />} />
 
-        <Route path="/worker4/terminal" element={<WorkerTerminal />} />
-        <Route path="/worker4/prediction" element={<WorkerPrediction />} />
-        <Route path="/worker4/task-allocation" element={<WorkerTaskAllocation />} />
-        <Route path="/worker4/upload-file" element={<WorkerUploadFile />} />
+          <Route path="/worker4/terminal" element={<WorkerTerminal />} />
+          <Route path="/worker4/prediction" element={<WorkerPrediction />} />
+          <Route
+            path="/worker4/task-allocation"
+            element={<WorkerTaskAllocation />}
+          />
+          <Route path="/worker4/upload-file" element={<WorkerUploadFile />} />
         </Route>
       </Routes>
     </Router>
