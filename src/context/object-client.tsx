@@ -3,7 +3,8 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useState, useRef
+  useState,
+  useRef,
 } from "react";
 import {
   UpdateClient,
@@ -27,19 +28,31 @@ export const ObjectClientProvider: React.FC<{
   children: ReactNode;
 }> = ({ url, children }) => {
   const [data, setData] = useState<any>({});
-    const updateClient = useRef<UpdateClient | null>(null);
+  const updateClient = useRef<UpdateClient | null>(null);
 
   useEffect(() => {
     const handleIncomingUpdate = (updatePacket: UpdatePacket) => {
       setData((prevData: any) => {
-        const newData = { ...prevData };
-        let current = newData;
-        for (const key of updatePacket.position.slice(0, -1)) {
-          current = current[key] = current[key] || {};
+        console.log(
+          "setting position",
+          updatePacket.position,
+          "with data",
+          updatePacket.data
+        );
+        if (updatePacket.position.length === 0) {
+          // handle update root position
+          return updatePacket.data;
+        } else {
+          // handle update nested position
+          const newData = { ...prevData };
+          let current = newData;
+          for (const key of updatePacket.position.slice(0, -1)) {
+            current = current[key] = current[key] || {};
+          }
+          current[updatePacket.position[updatePacket.position.length - 1]] =
+            updatePacket.data;
+          return newData;
         }
-        current[updatePacket.position[updatePacket.position.length - 1]] =
-          updatePacket.data;
-        return newData;
       });
     };
 
@@ -63,9 +76,15 @@ export const ObjectClientProvider: React.FC<{
     return current;
   };
 
-    const setItem = (name: string, value: any) => {
-      
-    const keys = name.split(".");
+  const setItem = (name: string, value: any) => {
+    const keys: Position = name.split(".");
+    if (updateClient.current) {
+      updateClient.current.sendUpdate({
+        timestamp: new Date().toISOString(),
+        position: keys,
+        data: value,
+      });
+    }
     setData((prevData: any) => {
       const newData = { ...prevData };
       let current = newData;
