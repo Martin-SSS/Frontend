@@ -89,7 +89,6 @@ export class UpdateClient {
       data: update.data,
     };
     const jsonUpdate = JSON.stringify(updatePacket);
-    console.log("sending update", jsonUpdate);
     this.websocket.send(jsonUpdate);
   }
 
