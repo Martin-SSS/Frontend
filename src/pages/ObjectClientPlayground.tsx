@@ -5,22 +5,12 @@ import {
 } from "../context/object-client";
 
 export function ObjectClientPlayground() {
-  const { data, getItem, setItem } = useObjectClient();
+  const { data, setItem } = useObjectClient();
   const [key, setKey] = useState("");
   const [value, setValue] = useState("");
 
-  const handleGetItem = () => {
-    try {
-      console.log("setting item");
-      const result = getItem(key);
-    } catch (error: any) {
-      console.error(error);
-    }
-  };
-
   const handleSetItem = () => {
     try {
-      console.log("setting item");
       setItem(key, value);
     } catch (error: any) {
       console.error(error);
@@ -44,7 +34,6 @@ export function ObjectClientPlayground() {
           onChange={(e) => setValue(e.target.value)}
         />
         <button onClick={handleSetItem}>Set Item</button>
-        <button onClick={handleGetItem}>Get Item</button>
       </div>
       <div>
         <h2>Current Data</h2>
