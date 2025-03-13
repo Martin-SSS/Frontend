@@ -33,12 +33,6 @@ export const ObjectClientProvider: React.FC<{
   useEffect(() => {
     const handleIncomingUpdate = (updatePacket: UpdatePacket) => {
       setData((prevData: any) => {
-        console.log(
-          "setting position",
-          updatePacket.position,
-          "with data",
-          updatePacket.data
-        );
         if (updatePacket.position.length === 0) {
           // handle update root position
           return updatePacket.data;
@@ -56,11 +50,14 @@ export const ObjectClientProvider: React.FC<{
       });
     };
 
-    const updateClient = new UpdateClient(url);
-    updateClient.handleIncomingUpdate = handleIncomingUpdate;
+    updateClient.current = new UpdateClient(url);
+    updateClient.current.handleIncomingUpdate = handleIncomingUpdate;
 
     return () => {
-      updateClient.close();
+      if (updateClient.current) {
+        updateClient.current.close();
+        updateClient.current = null;
+      }
     };
   }, [url]);
 
@@ -78,22 +75,24 @@ export const ObjectClientProvider: React.FC<{
 
   const setItem = (name: string, value: any) => {
     const keys: Position = name.split(".");
-    if (updateClient.current) {
+    if (updateClient.current !== null) {
       updateClient.current.sendUpdate({
         timestamp: new Date().toISOString(),
         position: keys,
         data: value,
       });
+      setData((prevData: any) => {
+        const newData = { ...prevData };
+        let current = newData;
+        for (const key of keys.slice(0, -1)) {
+          current = current[key] = current[key] || {};
+        }
+        current[keys[keys.length - 1]] = value;
+        return newData;
+      });
+    } else {
+      throw new Error("Update client is not initialized");
     }
-    setData((prevData: any) => {
-      const newData = { ...prevData };
-      let current = newData;
-      for (const key of keys.slice(0, -1)) {
-        current = current[key] = current[key] || {};
-      }
-      current[keys[keys.length - 1]] = value;
-      return newData;
-    });
   };
 
   return (
