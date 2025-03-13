@@ -23,9 +23,7 @@ const JsonValSchema: z.ZodSchema<JsonVal> = z.lazy(() =>
   ])
 );
 
-export interface Position {
-  root: string[];
-}
+export type Position = string[];
 
 export interface Update {
   timestamp: string;
@@ -35,7 +33,7 @@ export interface Update {
 
 export interface UpdatePacket {
   timestamp: string;
-  position: string[];
+  position: Position;
   data: JsonVal;
 }
 
@@ -87,7 +85,7 @@ export class UpdateClient {
   public sendUpdate(update: Update) {
     const updatePacket: UpdatePacket = {
       timestamp: update.timestamp,
-      position: update.position.root,
+      position: update.position,
       data: update.data,
     };
     const jsonUpdate = JSON.stringify(updatePacket);
