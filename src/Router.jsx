@@ -26,7 +26,7 @@ import WorkerTaskAllocation from "./pages/WorkerTaskAllocation";
 import WorkerUploadFile from "./pages/WorkerUploadFile";
 import { UpdateClientPlayground } from "./pages/UpdateClientPlayground";
 import { ObjectClientPlayground } from "./pages/ObjectClientPlayground";
-
+import { ObjectPlayground } from "./pages/ObjectPlayground";
 const AppRouter = () => {
   return (
     <Router>
@@ -39,6 +39,10 @@ const AppRouter = () => {
           <Route
             path="/object-client-playground"
             element={<ObjectClientPlayground />}
+          />
+          <Route
+            path="/object-playground"
+            element={<ObjectPlayground />}
           />
           <Route path="/" element={<Dashboard />} />
           <Route path="/team" element={<Team />} />
