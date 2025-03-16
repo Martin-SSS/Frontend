@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   useObjectClient,
-  ObjectClientProvider,
 } from "../context/object-client";
 
 export function ObjectClientPlayground() {
@@ -40,13 +39,5 @@ export function ObjectClientPlayground() {
         <pre>{JSON.stringify(data, null, 2)}</pre>
       </div>
     </div>
-  );
-}
-
-export function ObjectClientPlaygroundWrapper() {
-  return (
-    <ObjectClientProvider url="ws://localhost:8765">
-      <ObjectClientPlayground />
-    </ObjectClientProvider>
   );
 }
