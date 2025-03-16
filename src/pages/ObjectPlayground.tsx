@@ -8,6 +8,13 @@ export function ObjectPlayground() {
 
   const handleSetItem = () => {
     try {
+      let value_to_set: any = value;
+      if (value === "{}") {
+        value_to_set = {};
+      }
+      if (value === "[]") {
+        value_to_set = [];
+      }
       // Split the key into parts for nested path
       const keyParts = key.split('.');
       let current = proxyData;
@@ -21,7 +28,7 @@ export function ObjectPlayground() {
       }
 
       // Set the value at the final key
-      current[keyParts[keyParts.length - 1]] = value;
+      current[keyParts[keyParts.length - 1]] = value_to_set;
     } catch (error: any) {
       console.error(error);
     }

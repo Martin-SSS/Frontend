@@ -8,23 +8,23 @@ export const useWorkerDataObject = () => {
             set(obj, prop: string, value) {
                 const newPath = [...path, prop];
                 const fullPath = newPath.join('.');
-
-                // Handle nested objects by creating new proxies
-                if (value && typeof value === 'object' && !Array.isArray(value)) {
-                    obj[prop] = createProxy({}, newPath);
-                    // Recursively set all properties of the nested object
-                    Object.entries(value).forEach(([key, val]) => {
-                        obj[prop][key] = val;
-                    });
-                } else {
-                    obj[prop] = value;
-                    setItem(fullPath, value);
-                }
+                console.log('setting', fullPath, value)
+                setItem(fullPath, value)
                 return true;
             },
-            get(obj, prop: string) {
+            get(obj, prop: string | symbol) {
+                // Handle special cases for JSON.stringify and other built-in methods
+                if (prop === 'toJSON' || typeof prop === 'symbol') {
+                    return Reflect.get(obj, prop);
+                }
+
+                if (!obj.hasOwnProperty(prop)) {
+                    throw new Error(`Property '${prop}' does not exist on object at path '${path.join('.')}'`);
+                }
+                console.log('getting', prop, "from ", obj, "at", path)
                 // Handle nested objects by returning a new proxy
                 if (obj[prop] && typeof obj[prop] === 'object' && !Array.isArray(obj[prop])) {
+                    console.log('returning proxy at ', [...path, prop])
                     return createProxy(obj[prop], [...path, prop]);
                 }
                 return obj[prop] ?? getItem([...path, prop].join('.'));
