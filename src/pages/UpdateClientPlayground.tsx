@@ -24,7 +24,7 @@ export function UpdateClientPlayground() {
     if (ws.current && input && position) {
       const update: Update = {
         timestamp: new Date().toISOString(),
-        position: { root: position.split(".") },
+        position: position.split("."),
         data: input,
       };
       ws.current.sendUpdate(update);
