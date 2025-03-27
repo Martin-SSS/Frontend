@@ -7,6 +7,7 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+
 const SidebarItem = ({ title, to, icon, children, open = false, onClick }) => {
   return (
     <>
@@ -85,6 +86,12 @@ const SideBar = () => {
           to="/settings" 
           icon={<SettingsOutlinedIcon />} 
         />
+        <SidebarItem 
+          title="All worker data" 
+          to="/all-workers-data" 
+           
+        />
+        
       </List>
     </Box>
   );
