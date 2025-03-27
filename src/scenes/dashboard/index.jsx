@@ -1,7 +1,6 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { useState, useEffect } from "react";  // useEffect
@@ -45,9 +44,6 @@ const WorkerCard = ({ workerName, metrics }) => {
             ) : (
               <ExpandMoreIcon fontSize="large" sx={{ color: "#6870fa" }} />
             )}
-          </IconButton>
-          <IconButton>
-            <SettingsOutlinedIcon fontSize="large" sx={{ color: "#4cceac" }} />
           </IconButton>
         </Box>
       </Box>
