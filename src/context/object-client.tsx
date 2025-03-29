@@ -12,6 +12,7 @@ import {
   Position,
   Update,
 } from "../utils/update-client";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 interface ObjectClientContextProps {
   data: any;
@@ -28,6 +29,7 @@ export const ObjectClientProvider: React.FC<{
   children: ReactNode;
 }> = ({ url, children }) => {
   const [data, setData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
   const updateClient = useRef<UpdateClient | null>(null);
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export const ObjectClientProvider: React.FC<{
       setData((prevData: any) => {
         if (updatePacket.position.length === 0) {
           // handle update root position
+          setIsLoading(false);
           return updatePacket.data;
         } else {
           // handle update nested position
@@ -94,6 +97,23 @@ export const ObjectClientProvider: React.FC<{
       throw new Error("Update client is not initialized");
     }
   };
+
+  if (isLoading || Object.keys(data).length === 0) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Loading worker data...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <ObjectClientContext.Provider value={{ data, getItem, setItem }}>
