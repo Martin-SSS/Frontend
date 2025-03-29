@@ -6,7 +6,7 @@ import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import { useWorkerDataObject } from '../../../hooks/worker_data_object';
 
 const SidebarItem = ({ title, to, icon, children, open = false, onClick }) => {
   return (
@@ -36,24 +36,9 @@ const SidebarItem = ({ title, to, icon, children, open = false, onClick }) => {
 };
 
 const SideBar = () => {
-  const [workers, setWorkers] = useState([]);
   const [workerMenuOpen, setWorkerMenuOpen] = useState(false);
-
-  useEffect(() => {
-    // load worker data
-    fetch('/worker_parameters_config.json')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.workers_param_dict) {
-          // gain worker name
-          const workerList = Object.values(data.workers_param_dict).map((worker) => worker.name);
-          setWorkers(workerList);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to load worker data:', error);
-      });
-  }, []);
+  const workerData = useWorkerDataObject();
+  const workers = Object.values(workerData.workers_param_dict).map((worker) => worker.name);
 
   return (
     <Box component="nav" sx={{ width: 250, flexShrink: 0 }}>
