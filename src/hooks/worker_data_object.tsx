@@ -18,9 +18,11 @@ export const useWorkerDataObject = () => {
                     return Reflect.get(obj, prop);
                 }
 
+                // If property doesn't exist, return undefined instead of throwing
                 if (!obj.hasOwnProperty(prop)) {
-                    throw new Error(`Property '${prop}' does not exist on object at path '${path.join('.')}'`);
+                    return undefined;
                 }
+
                 console.log('getting', prop, "from ", obj, "at", path)
                 // Handle nested objects by returning a new proxy
                 if (obj[prop] && typeof obj[prop] === 'object' && !Array.isArray(obj[prop])) {
