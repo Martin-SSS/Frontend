@@ -6,19 +6,20 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { saveAs } from "file-saver";
-import workerJson from "../worker_parameters_config.json";
+import { useWorkerDataObject } from "../hooks/worker_data_object";
 
 // 提取所有 activity 数据
-const extractActivityRows = () => {
+const extractActivityRows = (workerData) => {
   const rows = [];
 
-  const workers = workerJson?.workers_param_dict || {};
+  const workers = workerData?.workers_param_dict || {};
 
-  Object.entries(workers).forEach(([ip, workerInfo]) => {
+  Object.entries(workers).forEach(([ip, workerInfo], index) => {
     const name = workerInfo?.name || "N/A";
     const activity = workerInfo?.setup?.activity || {};
 
     rows.push({
+      id: `${ip}-${index}`,
       ip,
       worker_name: name,
       ...activity,
@@ -28,24 +29,25 @@ const extractActivityRows = () => {
   return rows;
 };
 
-
 // 动态生成列
 const generateColumns = (rows) => {
   if (!rows.length) return [];
 
-  return Object.keys(rows[0]).map((key) => ({
-    field: key,
-    headerName: key,
-    width: 180,
-    sortable: true,
-    valueGetter: (params) => {
-      const value = params.row[key];
-      if (Array.isArray(value)) return JSON.stringify(value);
-      if (typeof value === "object" && value !== null)
-        return JSON.stringify(value);
-      return value !== undefined ? value : "N/A";
-    },
-  }));
+  return Object.keys(rows[0])
+    .filter(key => key !== 'id')
+    .map((key) => ({
+      field: key,
+      headerName: key,
+      width: 180,
+      sortable: true,
+      valueGetter: (params) => {
+        const value = params.row[key];
+        if (Array.isArray(value)) return JSON.stringify(value);
+        if (typeof value === "object" && value !== null)
+          return JSON.stringify(value);
+        return value !== undefined ? value : "N/A";
+      },
+    }));
 };
 
 // CSV 导出函数
@@ -67,30 +69,29 @@ const exportToCSV = (rows, columns) => {
 };
 
 const AllWorkersData = () => {
-  const rows = extractActivityRows(workerJson);
+  const workerData = useWorkerDataObject();
+  const rows = extractActivityRows(workerData);
   const columns = generateColumns(rows);
 
   return (
-    <Box p={3}>
-      <Typography variant="h5" fontWeight="bold" mb={2}>
-        All Workers Data
-      </Typography>
-
-      <Box mb={2} display="flex" justifyContent="flex-end">
-        <Button variant="contained" color="primary" onClick={() => exportToCSV(rows, columns)}>
-          Export CSV
+    <Box sx={{ height: 400, width: "100%" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h5">All Workers Data</Typography>
+        <Button
+          variant="contained"
+          onClick={() => exportToCSV(rows, columns)}
+        >
+          Export to CSV
         </Button>
       </Box>
-
-      <Box height={600}>
-        <DataGrid
-          rows={rows.map((row, idx) => ({ id: idx, ...row }))}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10, 20, 50]}
-          disableSelectionOnClick
-        />
-      </Box>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        disableSelectionOnClick
+        getRowId={(row) => row.id}
+      />
     </Box>
   );
 };
