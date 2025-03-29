@@ -1,71 +1,179 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Switch, FormControlLabel } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Switch,
+  Button,
+  TextField,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const SettingPage = () => {
-  // 状态管理
-  const [username, setUsername] = useState("User123");
-  const [email, setEmail] = useState("user@example.com");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [formData, setFormData] = useState({
+    taskInterval: "",
+    maxTasksPerWorker: "",
+    cpuThreshold: "",
+    memoryThreshold: "",
+    timezone: "",
+    enableLogging: false,
+    predictionModel: "",
+    predictionWindow: "",
+  });
 
-  // 保存设置
-  const handleSave = () => {
-    alert("Settings saved successfully!");
-    // 可在此添加保存逻辑，如发送 API 请求
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+
+  const handleChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMessage("");
+
+    /* Backend API part, need to change */
+    try {
+      const response = await fetch("http://localhost:5000/api/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save settings.");
+      }
+
+      const result = await response.json();
+      setSaveMessage("Settings saved successfully!");
+    } catch (error) {
+      console.error("Save error:", error);
+      setSaveMessage(" Failed to save settings.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <Box p="20px">
-      {/* 页面标题 */}
-      <Typography variant="h4" fontWeight="bold" mb={3}>
-        Settings
-      </Typography>
+    <Box m="20px">
+      <Typography variant="h4" mb={2}>Settings</Typography>
 
-      {/* 用户名设置 */}
-      <Box mb={3}>
-        <Typography variant="h6" mb={1}>
-          Username
-        </Typography>
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </Box>
+      {/* Task Scheduling Configuration */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography fontWeight="bold">Task Scheduling Configuration</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField
+            fullWidth
+            label="Task Interval (sec)"
+            type="number"
+            margin="dense"
+            value={formData.taskInterval}
+            onChange={(e) => handleChange("taskInterval", e.target.value)}
+          />
+          <TextField
+            fullWidth
+            label="Max Tasks Per Worker"
+            type="number"
+            margin="dense"
+            value={formData.maxTasksPerWorker}
+            onChange={(e) => handleChange("maxTasksPerWorker", e.target.value)}
+          />
+        </AccordionDetails>
+      </Accordion>
 
-      {/* 邮箱设置 */}
-      <Box mb={3}>
-        <Typography variant="h6" mb={1}>
-          Email
-        </Typography>
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </Box>
+      {/* Resource Allocation Rules */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography fontWeight="bold">Resource Allocation Rules</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField
+            fullWidth
+            label="CPU Usage Threshold (%)"
+            type="number"
+            margin="dense"
+            value={formData.cpuThreshold}
+            onChange={(e) => handleChange("cpuThreshold", e.target.value)}
+          />
+          <TextField
+            fullWidth
+            label="Memory Usage Threshold (%)"
+            type="number"
+            margin="dense"
+            value={formData.memoryThreshold}
+            onChange={(e) => handleChange("memoryThreshold", e.target.value)}
+          />
+        </AccordionDetails>
+      </Accordion>
 
-      {/* 通知设置 */}
-      <Box mb={3}>
-        <Typography variant="h6" mb={1}>
-          Notifications
-        </Typography>
-        <FormControlLabel
-          control={
+      {/* System-Wide Settings */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography fontWeight="bold">System-Wide Settings</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField
+            fullWidth
+            label="Timezone"
+            margin="dense"
+            value={formData.timezone}
+            onChange={(e) => handleChange("timezone", e.target.value)}
+          />
+          <Box display="flex" alignItems="center" mt={1}>
             <Switch
-              checked={notificationsEnabled}
-              onChange={(e) => setNotificationsEnabled(e.target.checked)}
+              checked={formData.enableLogging}
+              onChange={(e) => handleChange("enableLogging", e.target.checked)}
             />
-          }
-          label={notificationsEnabled ? "Enabled" : "Disabled"}
-        />
-      </Box>
+            <Typography ml={1}>Enable System Logging</Typography>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
 
-      {/* 保存按钮 */}
-      <Button variant="contained" color="primary" onClick={handleSave}>
-        Save Changes
+      {/* Predictive Configuration */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography fontWeight="bold">Predictive Configuration</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField
+            fullWidth
+            label="Prediction Model"
+            margin="dense"
+            value={formData.predictionModel}
+            onChange={(e) => handleChange("predictionModel", e.target.value)}
+          />
+          <TextField
+            fullWidth
+            label="Prediction Window (minutes)"
+            type="number"
+            margin="dense"
+            value={formData.predictionWindow}
+            onChange={(e) => handleChange("predictionWindow", e.target.value)}
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+        onClick={handleSave}
+        disabled={saving}
+      >
+        {saving ? "Saving..." : "Save Settings"}
       </Button>
+
+      {saveMessage && (
+        <Typography mt={2} color={saveMessage.includes("successfully") ? "green" : "red"}>
+          {saveMessage}
+        </Typography>
+      )}
     </Box>
   );
 };
