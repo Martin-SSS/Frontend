@@ -17,20 +17,21 @@ import {
 import { ColorModeContext } from "../../../theme";
 import { ToggledContext } from "../../../App";
 import { useNavigate } from "react-router-dom";
-import workerJson from "../../../worker_parameters_config.json"; 
+import { useWorkerDataObject } from "../../../hooks/worker_data_object";
 
 const Navbar = () => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
   const { toggled, setToggled } = useContext(ToggledContext);
   const isXsDevices = window.innerWidth <= 600;
+  const workerData = useWorkerDataObject();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
 
   // 获取所有 worker 名称
-  const workerNameList = Object.values(workerJson?.workers_param_dict || {}).map(
+  const workerNameList = Object.values(workerData?.workers_param_dict || {}).map(
     (info) => info.name
   );
 
