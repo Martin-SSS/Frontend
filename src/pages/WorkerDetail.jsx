@@ -263,17 +263,7 @@ const WorkerDetail = () => {
         <Box sx={{ mt: 2, fontFamily: 'monospace', whiteSpace: 'pre-wrap', bgcolor: '#f5f5f5', p: 2, borderRadius: 2 }}>
           <h3>Terminal Output</h3>
           <code>
-            {`
-[INFO] Worker initialized: master
-[INFO] CPU usage at 12.3%
-[INFO] Memory usage: 145.2MB / 2048MB
-[INFO] Task received: image_classification.py
-[INFO] Running task...
-[INFO] Task completed in 2.8s
-[WARNING] Disk space below 20%
-[INFO] Upload complete: result_model.h5
-[INFO] Worker idle. Awaiting next task...
-      `}
+            <iframe src={`http://${ip}:7681`} width="100%" height="500px" />
           </code>
         </Box>
       )}
