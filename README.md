@@ -29,10 +29,10 @@ Please make sure you have installed the following dependencies:
 git clone https://github.com/Martin-SSS/Frontend
 cd your-repo
 
-# Install Dependencies
+# Install Dependencies through cmd in the project directory
 npm install
 
-# Start the development environment
+# Start the development environment through cmd in the project directory
 npm run dev
 
 # Access address
